@@ -108,14 +108,14 @@ class _StudentsManagement extends StatelessWidget {
                   backgroundColor: isDisabled
                       ? Colors.red
                       : isActive
-                      ? Colors.green
-                      : const Color(0xFFFFDE59),
+                          ? Colors.green
+                          : const Color(0xFFFFDE59),
                   child: Icon(
                     isDisabled
                         ? Icons.block
                         : isActive
-                        ? Icons.check_circle
-                        : Icons.person,
+                            ? Icons.check_circle
+                            : Icons.person,
                     color: Colors.white,
                     size: 20,
                   ),
@@ -144,88 +144,45 @@ class _StudentsManagement extends StatelessWidget {
                 ),
                 children: [
                   const Divider(),
-                  // تعديل الاسم
                   _EditableField(label: 'الاسم', value: data['username'] ?? '', onSave: (val) {
                     FirebaseFirestore.instance.collection('users').doc(uid).update({'username': val});
                   }),
-                  // تعديل البريد
                   _EditableField(label: 'البريد', value: data['email'] ?? '', onSave: (val) {
                     FirebaseFirestore.instance.collection('users').doc(uid).update({'email': val});
                   }),
-                  // تعديل الجامعة
                   _EditableField(label: 'الجامعة', value: data['university'] ?? '', onSave: (val) {
                     FirebaseFirestore.instance.collection('users').doc(uid).update({'university': val});
                   }),
-                  // اختيار التخصص والسنة
-                  _SpecialtyYearSelector(
-                    uid: uid,
-                    currentSpecialty: data['specialty'] ?? '',
-                    currentYear: data['year'] ?? '',
-                  ),
+                  _SpecialtyYearSelector(uid: uid, currentSpecialty: data['specialty'] ?? '', currentYear: data['year'] ?? ''),
                   const SizedBox(height: 8),
-                  // أزرار التحكم
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        // زر تفعيل/تعطيل الاشتراك
                         ElevatedButton.icon(
-                          icon: Icon(
-                            isActive ? Icons.block : Icons.check_circle,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          label: Text(
-                            isActive ? 'تعطيل الاشتراك' : 'تفعيل الاشتراك',
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isActive ? Colors.orange : Colors.green,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
+                          icon: Icon(isActive ? Icons.block : Icons.check_circle, color: Colors.white, size: 18),
+                          label: Text(isActive ? 'تعطيل الاشتراك' : 'تفعيل الاشتراك', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                          style: ElevatedButton.styleFrom(backgroundColor: isActive ? Colors.orange : Colors.green, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
                           onPressed: () async {
-                            await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                              'subscriptionActive': !isActive,
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(isActive ? 'تم تعطيل الاشتراك' : 'تم تفعيل الاشتراك')),
-                            );
+                            await FirebaseFirestore.instance.collection('users').doc(uid).update({'subscriptionActive': !isActive});
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isActive ? 'تم تعطيل الاشتراك' : 'تم تفعيل الاشتراك')));
                           },
                         ),
-                        // زر تفعيل/تعطيل الحساب
                         ElevatedButton.icon(
-                          icon: Icon(
-                            isDisabled ? Icons.check_circle : Icons.block,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          label: Text(
-                            isDisabled ? 'تفعيل الحساب' : 'تعطيل الحساب',
-                            style: const TextStyle(color: Colors.white, fontSize: 13),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isDisabled ? Colors.green : Colors.orange,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
+                          icon: Icon(isDisabled ? Icons.check_circle : Icons.block, color: Colors.white, size: 18),
+                          label: Text(isDisabled ? 'تفعيل الحساب' : 'تعطيل الحساب', style: const TextStyle(color: Colors.white, fontSize: 13)),
+                          style: ElevatedButton.styleFrom(backgroundColor: isDisabled ? Colors.green : Colors.orange, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
                           onPressed: () async {
-                            await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                              'disabled': !isDisabled,
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(isDisabled ? 'تم تفعيل الحساب' : 'تم تعطيل الحساب')),
-                            );
+                            await FirebaseFirestore.instance.collection('users').doc(uid).update({'disabled': !isDisabled});
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isDisabled ? 'تم تفعيل الحساب' : 'تم تعطيل الحساب')));
                           },
                         ),
-                        // زر حذف الطالب
                         ElevatedButton.icon(
                           icon: const Icon(Icons.delete, color: Colors.white, size: 18),
                           label: const Text('حذف الطالب', style: TextStyle(color: Colors.white, fontSize: 13)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          ),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red, padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
                           onPressed: () async {
                             final confirm = await showDialog<bool>(
                               context: context,
@@ -234,11 +191,7 @@ class _StudentsManagement extends StatelessWidget {
                                 content: Text('هل أنت متأكد من حذف الطالب "$username"؟'),
                                 actions: [
                                   TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                    onPressed: () => Navigator.pop(ctx, true),
-                                    child: const Text('حذف'),
-                                  ),
+                                  ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red), onPressed: () => Navigator.pop(ctx, true), child: const Text('حذف')),
                                 ],
                               ),
                             );
@@ -261,7 +214,6 @@ class _StudentsManagement extends StatelessWidget {
   }
 }
 
-// ==================== محدد التخصص والسنة ====================
 class _SpecialtyYearSelector extends StatefulWidget {
   final String uid;
   final String currentSpecialty;
@@ -303,11 +255,7 @@ class _SpecialtyYearSelectorState extends State<_SpecialtyYearSelector> {
         children: [
           DropdownButtonFormField<String>(
             value: _specialties.contains(_selectedSpecialty) ? _selectedSpecialty : null,
-            decoration: const InputDecoration(
-              labelText: 'التخصص',
-              hintText: 'اختر التخصص',
-              border: OutlineInputBorder(),
-            ),
+            decoration: const InputDecoration(labelText: 'التخصص', hintText: 'اختر التخصص', border: OutlineInputBorder()),
             items: _specialties.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) {
               setState(() => _selectedSpecialty = v);
@@ -317,11 +265,7 @@ class _SpecialtyYearSelectorState extends State<_SpecialtyYearSelector> {
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: _years.contains(_selectedYear) ? _selectedYear : null,
-            decoration: const InputDecoration(
-              labelText: 'السنة',
-              hintText: 'اختر السنة',
-              border: OutlineInputBorder(),
-            ),
+            decoration: const InputDecoration(labelText: 'السنة', hintText: 'اختر السنة', border: OutlineInputBorder()),
             items: _years.map((y) => DropdownMenuItem(value: y, child: Text(y))).toList(),
             onChanged: (v) {
               setState(() => _selectedYear = v);
@@ -334,7 +278,6 @@ class _SpecialtyYearSelectorState extends State<_SpecialtyYearSelector> {
   }
 }
 
-// ==================== حقل قابل للتعديل ====================
 class _EditableField extends StatelessWidget {
   final String label;
   final String value;
@@ -348,20 +291,9 @@ class _EditableField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
         children: [
-          Expanded(
-            child: TextField(
-              controller: ctrl,
-              decoration: InputDecoration(
-                labelText: label,
-                border: const OutlineInputBorder(),
-              ),
-            ),
-          ),
+          Expanded(child: TextField(controller: ctrl, decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()))),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () => onSave(ctrl.text.trim()),
-            child: const Text('حفظ'),
-          ),
+          ElevatedButton(onPressed: () => onSave(ctrl.text.trim()), child: const Text('حفظ')),
         ],
       ),
     );
@@ -504,9 +436,7 @@ class _CoursesManagementState extends State<_CoursesManagement> {
 
   Future<void> _addCourse() async {
     if (_nameCtrl.text.trim().isEmpty || _specialty == null || _year == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الرجاء إدخال اسم المادة واختيار التخصص والسنة')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('الرجاء إدخال اسم المادة واختيار التخصص والسنة')));
       return;
     }
     await FirebaseFirestore.instance.collection('courses').add({
@@ -550,11 +480,7 @@ class _CoursesManagementState extends State<_CoursesManagement> {
                     onChanged: (v) => setState(() => _year = v),
                   ),
                   const SizedBox(height: 12),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.add),
-                    label: const Text('إضافة المادة'),
-                    onPressed: _addCourse,
-                  ),
+                  ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة المادة'), onPressed: _addCourse),
                 ],
               ),
             ),
@@ -580,17 +506,11 @@ class _CoursesManagementState extends State<_CoursesManagement> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _editCourseDialog(context, id, data),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () async {
-                              await _deleteCourse(id);
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف المادة')));
-                            },
-                          ),
+                          IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editCourseDialog(context, id, data)),
+                          IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () async {
+                            await _deleteCourse(id);
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف المادة')));
+                          }),
                         ],
                       ),
                     ),
@@ -615,40 +535,29 @@ class _CoursesManagementState extends State<_CoursesManagement> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
           title: const Text('تعديل المادة'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'الاسم')),
-              TextField(controller: imageCtrl, decoration: const InputDecoration(labelText: 'رابط الصورة')),
-              DropdownButtonFormField<String>(
-                value: _specialties.contains(specialty) ? specialty : null,
-                decoration: const InputDecoration(labelText: 'التخصص'),
-                items: _specialties.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                onChanged: (v) => setDialogState(() => specialty = v!),
-              ),
-              DropdownButtonFormField<String>(
-                value: _years.contains(year) ? year : null,
-                decoration: const InputDecoration(labelText: 'السنة'),
-                items: _years.map((y) => DropdownMenuItem(value: y, child: Text(y))).toList(),
-                onChanged: (v) => setDialogState(() => year = v!),
-              ),
-            ],
-          ),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'الاسم')),
+            TextField(controller: imageCtrl, decoration: const InputDecoration(labelText: 'رابط الصورة')),
+            DropdownButtonFormField<String>(
+              value: _specialties.contains(specialty) ? specialty : null,
+              decoration: const InputDecoration(labelText: 'التخصص'),
+              items: _specialties.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              onChanged: (v) => setDialogState(() => specialty = v!),
+            ),
+            DropdownButtonFormField<String>(
+              value: _years.contains(year) ? year : null,
+              decoration: const InputDecoration(labelText: 'السنة'),
+              items: _years.map((y) => DropdownMenuItem(value: y, child: Text(y))).toList(),
+              onChanged: (v) => setDialogState(() => year = v!),
+            ),
+          ]),
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-            ElevatedButton(
-              onPressed: () async {
-                await FirebaseFirestore.instance.collection('courses').doc(id).update({
-                  'name': nameCtrl.text,
-                  'imageUrl': imageCtrl.text,
-                  'specialty': specialty,
-                  'year': year,
-                });
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل')));
-              },
-              child: const Text('حفظ'),
-            ),
+            ElevatedButton(onPressed: () async {
+              await FirebaseFirestore.instance.collection('courses').doc(id).update({'name': nameCtrl.text, 'imageUrl': imageCtrl.text, 'specialty': specialty, 'year': year});
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل')));
+            }, child: const Text('حفظ')),
           ],
         ),
       ),
@@ -659,15 +568,11 @@ class _CoursesManagementState extends State<_CoursesManagement> {
     final lectures = await FirebaseFirestore.instance.collection('courses').doc(id).collection('lectures').get();
     for (var doc in lectures.docs) {
       final quizzes = await doc.reference.collection('quizzes').get();
-      for (var q in quizzes.docs) {
-        await q.reference.delete();
-      }
+      for (var q in quizzes.docs) { await q.reference.delete(); }
       await doc.reference.delete();
     }
     final messages = await FirebaseFirestore.instance.collection('courses').doc(id).collection('messages').get();
-    for (var msg in messages.docs) {
-      await msg.reference.delete();
-    }
+    for (var msg in messages.docs) { await msg.reference.delete(); }
     await FirebaseFirestore.instance.collection('courses').doc(id).delete();
   }
 }
@@ -675,7 +580,6 @@ class _CoursesManagementState extends State<_CoursesManagement> {
 // ==================== إدارة التخصصات والسنوات ====================
 class _SpecialtiesAndYearsManagement extends StatefulWidget {
   const _SpecialtiesAndYearsManagement();
-
   @override
   State<_SpecialtiesAndYearsManagement> createState() => _SpecialtiesAndYearsManagementState();
 }
@@ -687,18 +591,12 @@ class _SpecialtiesAndYearsManagementState extends State<_SpecialtiesAndYearsMana
   List<String> _years = [];
 
   @override
-  void initState() {
-    super.initState();
-    _loadLists();
-  }
+  void initState() { super.initState(); _loadLists(); }
 
   Future<void> _loadLists() async {
     final specs = await SpecialtiesService.getSpecialties();
     final yrs = await SpecialtiesService.getYears();
-    setState(() {
-      _specialties = specs;
-      _years = yrs;
-    });
+    setState(() { _specialties = specs; _years = yrs; });
   }
 
   Future<void> _addSpecialty() async {
@@ -711,47 +609,20 @@ class _SpecialtiesAndYearsManagementState extends State<_SpecialtiesAndYearsMana
 
   Future<void> _editSpecialty(int index) async {
     final ctrl = TextEditingController(text: _specialties[index]);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('تعديل التخصص'),
-        content: TextField(controller: ctrl, decoration: const InputDecoration(labelText: 'اسم التخصص')),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('حفظ'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      setState(() => _specialties[index] = result);
-      await SpecialtiesService.saveSpecialties(_specialties);
-    }
+    final result = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('تعديل التخصص'),
+      content: TextField(controller: ctrl, decoration: const InputDecoration(labelText: 'اسم التخصص')),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')), ElevatedButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('حفظ'))],
+    ));
+    if (result != null && result.isNotEmpty) { setState(() => _specialties[index] = result); await SpecialtiesService.saveSpecialties(_specialties); }
   }
 
   Future<void> _deleteSpecialty(int index) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('حذف التخصص'),
-        content: Text('هل أنت متأكد من حذف "${_specialties[index]}"؟'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('حذف'),
-          ),
-        ],
-      ),
-    );
-    if (confirm == true) {
-      setState(() => _specialties.removeAt(index));
-      await SpecialtiesService.saveSpecialties(_specialties);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف التخصص')));
-    }
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('حذف التخصص'), content: Text('هل أنت متأكد من حذف "${_specialties[index]}"؟'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red), onPressed: () => Navigator.pop(ctx, true), child: const Text('حذف'))],
+    ));
+    if (confirm == true) { setState(() => _specialties.removeAt(index)); await SpecialtiesService.saveSpecialties(_specialties); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف التخصص'))); }
   }
 
   Future<void> _addYear() async {
@@ -764,176 +635,54 @@ class _SpecialtiesAndYearsManagementState extends State<_SpecialtiesAndYearsMana
 
   Future<void> _editYear(int index) async {
     final ctrl = TextEditingController(text: _years[index]);
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('تعديل السنة'),
-        content: TextField(controller: ctrl, decoration: const InputDecoration(labelText: 'اسم السنة')),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('حفظ'),
-          ),
-        ],
-      ),
-    );
-    if (result != null && result.isNotEmpty) {
-      setState(() => _years[index] = result);
-      await SpecialtiesService.saveYears(_years);
-    }
+    final result = await showDialog<String>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('تعديل السنة'), content: TextField(controller: ctrl, decoration: const InputDecoration(labelText: 'اسم السنة')),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')), ElevatedButton(onPressed: () => Navigator.pop(ctx, ctrl.text.trim()), child: const Text('حفظ'))],
+    ));
+    if (result != null && result.isNotEmpty) { setState(() => _years[index] = result); await SpecialtiesService.saveYears(_years); }
   }
 
   Future<void> _deleteYear(int index) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('حذف السنة'),
-        content: Text('هل أنت متأكد من حذف "${_years[index]}"؟'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('حذف'),
-          ),
-        ],
-      ),
-    );
-    if (confirm == true) {
-      setState(() => _years.removeAt(index));
-      await SpecialtiesService.saveYears(_years);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف السنة')));
-    }
+    final confirm = await showDialog<bool>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('حذف السنة'), content: Text('هل أنت متأكد من حذف "${_years[index]}"؟'),
+      actions: [TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('إلغاء')), ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.red), onPressed: () => Navigator.pop(ctx, true), child: const Text('حذف'))],
+    ));
+    if (confirm == true) { setState(() => _years.removeAt(index)); await SpecialtiesService.saveYears(_years); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم حذف السنة'))); }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(12),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('التخصصات', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF3131))),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _specialtyCtrl,
-                        decoration: const InputDecoration(labelText: 'اسم التخصص الجديد'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text('إضافة'),
-                      onPressed: _addSpecialty,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                if (_specialties.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Center(child: Text('لا توجد تخصصات بعد. أضف أول تخصص.', style: TextStyle(color: Colors.grey))),
-                  )
-                else
-                  ...List.generate(_specialties.length, (index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        title: Text(_specialties[index]),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => _editSpecialty(index),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteSpecialty(index),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('السنوات الدراسية', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF8C00))),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _yearCtrl,
-                        decoration: const InputDecoration(labelText: 'اسم السنة الجديدة'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: const Text('إضافة'),
-                      onPressed: _addYear,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                if (_years.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Center(child: Text('لا توجد سنوات بعد. أضف أول سنة.', style: TextStyle(color: Colors.grey))),
-                  )
-                else
-                  ...List.generate(_years.length, (index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        title: Text(_years[index]),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => _editYear(index),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteYear(index),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+    return ListView(padding: const EdgeInsets.all(12), children: [
+      Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('التخصصات', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF3131))),
+        const SizedBox(height: 12),
+        Row(children: [Expanded(child: TextField(controller: _specialtyCtrl, decoration: const InputDecoration(labelText: 'اسم التخصص الجديد'))), const SizedBox(width: 12), ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة'), onPressed: _addSpecialty)]),
+        const SizedBox(height: 12),
+        if (_specialties.isEmpty) const Padding(padding: EdgeInsets.all(20), child: Center(child: Text('لا توجد تخصصات بعد. أضف أول تخصص.', style: TextStyle(color: Colors.grey))))
+        else ...List.generate(_specialties.length, (index) => Card(margin: const EdgeInsets.symmetric(vertical: 4), child: ListTile(title: Text(_specialties[index]), trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editSpecialty(index)),
+          IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteSpecialty(index)),
+        ])))),
+      ]))),
+      const SizedBox(height: 16),
+      Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('السنوات الدراسية', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFFF8C00))),
+        const SizedBox(height: 12),
+        Row(children: [Expanded(child: TextField(controller: _yearCtrl, decoration: const InputDecoration(labelText: 'اسم السنة الجديدة'))), const SizedBox(width: 12), ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة'), onPressed: _addYear)]),
+        const SizedBox(height: 12),
+        if (_years.isEmpty) const Padding(padding: EdgeInsets.all(20), child: Center(child: Text('لا توجد سنوات بعد. أضف أول سنة.', style: TextStyle(color: Colors.grey))))
+        else ...List.generate(_years.length, (index) => Card(margin: const EdgeInsets.symmetric(vertical: 4), child: ListTile(title: Text(_years[index]), trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editYear(index)),
+          IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteYear(index)),
+        ])))),
+      ]))),
+    ]);
   }
 }
 
 // ==================== إدارة الحسابات ====================
 class _AccountsManagement extends StatelessWidget {
   const _AccountsManagement();
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -942,60 +691,27 @@ class _AccountsManagement extends StatelessWidget {
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final users = snapshot.data!.docs;
         if (users.isEmpty) return const Center(child: Text('لا توجد حسابات'));
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final data = users[index].data() as Map<String, dynamic>;
-            final uid = users[index].id;
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: data['disabled'] == true ? Colors.red : Colors.green,
-                  child: Icon(data['disabled'] == true ? Icons.block : Icons.check, color: Colors.white),
-                ),
-                title: Text(data['username'] ?? 'بدون اسم'),
-                subtitle: Text('${data['role']} - ${data['email']}'),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (action) async {
-                    switch (action) {
-                      case 'toggle':
-                        await FirebaseFirestore.instance.collection('users').doc(uid).update({
-                          'disabled': !(data['disabled'] ?? false),
-                        });
-                        break;
-                      case 'changeRole':
-                        final roles = ['student', 'teacher', 'admin'];
-                        final currentIndex = roles.indexOf(data['role'] ?? 'student');
-                        final newRole = roles[(currentIndex + 1) % roles.length];
-                        await FirebaseFirestore.instance.collection('users').doc(uid).update({'role': newRole});
-                        break;
-                      case 'delete':
-                        await FirebaseFirestore.instance.collection('users').doc(uid).delete();
-                        break;
-                    }
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التنفيذ')));
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'toggle',
-                      child: Text(data['disabled'] == true ? 'تفعيل الحساب' : 'تعطيل الحساب'),
-                    ),
-                    PopupMenuItem(
-                      value: 'changeRole',
-                      child: Text('تغيير الدور (حالي: ${data['role']})'),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: const Text('حذف الحساب', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+        return ListView.builder(padding: const EdgeInsets.all(12), itemCount: users.length, itemBuilder: (context, index) {
+          final data = users[index].data() as Map<String, dynamic>;
+          final uid = users[index].id;
+          return Card(margin: const EdgeInsets.symmetric(vertical: 4), child: ListTile(
+            leading: CircleAvatar(backgroundColor: data['disabled'] == true ? Colors.red : Colors.green, child: Icon(data['disabled'] == true ? Icons.block : Icons.check, color: Colors.white)),
+            title: Text(data['username'] ?? 'بدون اسم'),
+            subtitle: Text('${data['role']} - ${data['email']}'),
+            trailing: PopupMenuButton<String>(onSelected: (action) async {
+              switch (action) {
+                case 'toggle': await FirebaseFirestore.instance.collection('users').doc(uid).update({'disabled': !(data['disabled'] ?? false)}); break;
+                case 'changeRole': final roles = ['student', 'teacher', 'admin']; final newRole = roles[(roles.indexOf(data['role'] ?? 'student') + 1) % roles.length]; await FirebaseFirestore.instance.collection('users').doc(uid).update({'role': newRole}); break;
+                case 'delete': await FirebaseFirestore.instance.collection('users').doc(uid).delete(); break;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التنفيذ')));
+            }, itemBuilder: (context) => [
+              PopupMenuItem(value: 'toggle', child: Text(data['disabled'] == true ? 'تفعيل الحساب' : 'تعطيل الحساب')),
+              PopupMenuItem(value: 'changeRole', child: Text('تغيير الدور (حالي: ${data['role']})')),
+              PopupMenuItem(value: 'delete', child: const Text('حذف الحساب', style: TextStyle(color: Colors.red))),
+            ]),
+          ));
+        });
       },
     );
   }
@@ -1004,7 +720,6 @@ class _AccountsManagement extends StatelessWidget {
 // ==================== نتائج الكويزات ====================
 class _QuizResultsManagement extends StatelessWidget {
   const _QuizResultsManagement();
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -1013,37 +728,20 @@ class _QuizResultsManagement extends StatelessWidget {
         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final results = snapshot.data!.docs;
         if (results.isEmpty) return const Center(child: Text('لا توجد نتائج بعد'));
-        return ListView.builder(
-          padding: const EdgeInsets.all(12),
-          itemCount: results.length,
-          itemBuilder: (context, index) {
-            final data = results[index].data() as Map<String, dynamic>;
-            return FutureBuilder(
-              future: _getStudentName(data['studentId'] ?? ''),
-              builder: (context, nameSnapshot) {
-                final studentName = nameSnapshot.data ?? 'طالب غير معروف';
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  child: ListTile(
-                    title: Text(studentName),
-                    subtitle: Text('النتيجة: ${data['score']} / ${data['totalQuestions']}'),
-                    trailing: Text(_formatTimestamp(data['timestamp'])),
-                  ),
-                );
-              },
-            );
-          },
-        );
+        return ListView.builder(padding: const EdgeInsets.all(12), itemCount: results.length, itemBuilder: (context, index) {
+          final data = results[index].data() as Map<String, dynamic>;
+          return FutureBuilder(future: _getStudentName(data['studentId'] ?? ''), builder: (context, nameSnapshot) {
+            return Card(margin: const EdgeInsets.symmetric(vertical: 4), child: ListTile(title: Text(nameSnapshot.data ?? 'طالب غير معروف'), subtitle: Text('النتيجة: ${data['score']} / ${data['totalQuestions']}'), trailing: Text(_formatTimestamp(data['timestamp']))));
+          });
+        });
       },
     );
   }
-
   Future<String> _getStudentName(String uid) async {
     if (uid.isEmpty) return 'غير معروف';
     final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     return doc.get('username') ?? doc.get('email') ?? 'طالب';
   }
-
   String _formatTimestamp(dynamic ts) {
     if (ts == null) return '';
     final date = (ts as Timestamp).toDate();
@@ -1054,7 +752,6 @@ class _QuizResultsManagement extends StatelessWidget {
 // ==================== إدارة روابط التواصل الاجتماعي ====================
 class _SocialLinksManagement extends StatefulWidget {
   const _SocialLinksManagement();
-
   @override
   State<_SocialLinksManagement> createState() => _SocialLinksManagementState();
 }
@@ -1062,9 +759,7 @@ class _SocialLinksManagement extends StatefulWidget {
 class _SocialLinksManagementState extends State<_SocialLinksManagement> {
   final _urlCtrl = TextEditingController();
   String _selectedPlatform = 'Instagram';
-  final List<String> _platforms = [
-    'Instagram', 'Facebook', 'Twitter/X', 'YouTube', 'TikTok', 'Telegram', 'WhatsApp', 'LinkedIn', 'Website'
-  ];
+  final List<String> _platforms = ['Instagram', 'Facebook', 'Twitter/X', 'YouTube', 'TikTok', 'Telegram', 'WhatsApp', 'LinkedIn', 'Website'];
 
   final Map<String, IconData> _icons = {
     'Instagram': Icons.camera_alt,
@@ -1080,11 +775,7 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
 
   Future<void> _addLink() async {
     if (_urlCtrl.text.trim().isEmpty) return;
-    await FirebaseFirestore.instance.collection('socialLinks').add({
-      'platform': _selectedPlatform,
-      'url': _urlCtrl.text.trim(),
-      'order': DateTime.now().millisecondsSinceEpoch,
-    });
+    await FirebaseFirestore.instance.collection('socialLinks').add({'platform': _selectedPlatform, 'url': _urlCtrl.text.trim(), 'order': DateTime.now().millisecondsSinceEpoch});
     _urlCtrl.clear();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تمت إضافة الرابط')));
   }
@@ -1092,38 +783,12 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
   Future<void> _editLink(String docId, String currentUrl, String currentPlatform) async {
     _urlCtrl.text = currentUrl;
     _selectedPlatform = currentPlatform;
-    final result = await showDialog<Map<String, String>>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('تعديل الرابط'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonFormField<String>(
-              value: _selectedPlatform,
-              decoration: const InputDecoration(labelText: 'المنصة'),
-              items: _platforms.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
-              onChanged: (v) => _selectedPlatform = v!,
-            ),
-            TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط')),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, {'platform': _selectedPlatform, 'url': _urlCtrl.text}),
-            child: const Text('حفظ'),
-          ),
-        ],
-      ),
-    );
-    if (result != null) {
-      await FirebaseFirestore.instance.collection('socialLinks').doc(docId).update({
-        'platform': result['platform'],
-        'url': result['url'],
-      });
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل')));
-    }
+    final result = await showDialog<Map<String, String>>(context: context, builder: (ctx) => AlertDialog(
+      title: const Text('تعديل الرابط'), content: Column(mainAxisSize: MainAxisSize.min, children: [
+      DropdownButtonFormField<String>(value: _selectedPlatform, decoration: const InputDecoration(labelText: 'المنصة'), items: _platforms.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(), onChanged: (v) => _selectedPlatform = v!),
+      TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط')),
+    ]), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')), ElevatedButton(onPressed: () => Navigator.pop(ctx, {'platform': _selectedPlatform, 'url': _urlCtrl.text}), child: const Text('حفظ'))]));
+    if (result != null) { await FirebaseFirestore.instance.collection('socialLinks').doc(docId).update({'platform': result['platform'], 'url': result['url']}); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل'))); }
   }
 
   Future<void> _deleteLink(String docId) async {
@@ -1133,85 +798,32 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedPlatform,
-                      decoration: const InputDecoration(labelText: 'المنصة'),
-                      items: _platforms.map((p) => DropdownMenuItem(value: p, child: Row(
-                        children: [
-                          Icon(_icons[p], size: 18),
-                          const SizedBox(width: 8),
-                          Text(p),
-                        ],
-                      ))).toList(),
-                      onChanged: (v) => setState(() => _selectedPlatform = v!),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    flex: 2,
-                    child: TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط')),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.add),
-                    label: const Text('إضافة'),
-                    onPressed: _addLink,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('socialLinks').orderBy('order').snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-              final links = snapshot.data!.docs;
-              if (links.isEmpty) return const Center(child: Text('لا توجد روابط'));
-              return ListView.builder(
-                itemCount: links.length,
-                itemBuilder: (context, index) {
-                  final data = links[index].data() as Map<String, dynamic>;
-                  final platform = data['platform'] ?? '';
-                  final icon = _icons[platform] ?? Icons.link;
-                  return Card(
-                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    child: ListTile(
-                      leading: Icon(icon, color: const Color(0xFFFF8C00)),
-                      title: Text(platform),
-                      subtitle: Text(data['url'] ?? ''),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _editLink(links[index].id, data['url'] ?? '', platform),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteLink(links[index].id),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
+    return Column(children: [
+      Padding(padding: const EdgeInsets.all(12), child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
+        Expanded(child: DropdownButtonFormField<String>(value: _selectedPlatform, decoration: const InputDecoration(labelText: 'المنصة'), items: _platforms.map((p) => DropdownMenuItem(value: p, child: Row(children: [Icon(_icons[p], size: 18), const SizedBox(width: 8), Text(p)]))).toList(), onChanged: (v) => setState(() => _selectedPlatform = v!))),
+        const SizedBox(width: 12), Expanded(flex: 2, child: TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط'))),
+        const SizedBox(width: 12), ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة'), onPressed: _addLink),
+      ]))))),
+      Expanded(child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('socialLinks').orderBy('order').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          final links = snapshot.data!.docs;
+          if (links.isEmpty) return const Center(child: Text('لا توجد روابط'));
+          return ListView.builder(itemCount: links.length, itemBuilder: (context, index) {
+            final data = links[index].data() as Map<String, dynamic>;
+            final platform = data['platform'] ?? '';
+            final icon = _icons[platform] ?? Icons.link;
+            return Card(margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: ListTile(
+              leading: Icon(icon, color: const Color(0xFFFF8C00)), title: Text(platform), subtitle: Text(data['url'] ?? ''),
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editLink(links[index].id, data['url'] ?? '', platform)),
+                IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteLink(links[index].id)),
+              ]),
+            ));
+          });
+        },
+      )),
+    ]);
   }
 }
