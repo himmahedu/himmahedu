@@ -1,0 +1,28 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.google.gms.google-services"
+}
+
+android {
+    namespace "com.example.himmah_app"
+    compileSdkVersion 35
+
+    defaultConfig {
+        applicationId "com.example.himmah_app"
+        minSdkVersion 23
+        targetSdkVersion 35
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
