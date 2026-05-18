@@ -775,7 +775,11 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
 
   Future<void> _addLink() async {
     if (_urlCtrl.text.trim().isEmpty) return;
-    await FirebaseFirestore.instance.collection('socialLinks').add({'platform': _selectedPlatform, 'url': _urlCtrl.text.trim(), 'order': DateTime.now().millisecondsSinceEpoch});
+    await FirebaseFirestore.instance.collection('socialLinks').add({
+      'platform': _selectedPlatform,
+      'url': _urlCtrl.text.trim(),
+      'order': DateTime.now().millisecondsSinceEpoch,
+    });
     _urlCtrl.clear();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تمت إضافة الرابط')));
   }
@@ -783,12 +787,38 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
   Future<void> _editLink(String docId, String currentUrl, String currentPlatform) async {
     _urlCtrl.text = currentUrl;
     _selectedPlatform = currentPlatform;
-    final result = await showDialog<Map<String, String>>(context: context, builder: (ctx) => AlertDialog(
-      title: const Text('تعديل الرابط'), content: Column(mainAxisSize: MainAxisSize.min, children: [
-      DropdownButtonFormField<String>(value: _selectedPlatform, decoration: const InputDecoration(labelText: 'المنصة'), items: _platforms.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(), onChanged: (v) => _selectedPlatform = v!),
-      TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط')),
-    ]), actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')), ElevatedButton(onPressed: () => Navigator.pop(ctx, {'platform': _selectedPlatform, 'url': _urlCtrl.text}), child: const Text('حفظ'))]));
-    if (result != null) { await FirebaseFirestore.instance.collection('socialLinks').doc(docId).update({'platform': result['platform'], 'url': result['url']}); ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل'))); }
+    final result = await showDialog<Map<String, String>>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تعديل الرابط'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<String>(
+              value: _selectedPlatform,
+              decoration: const InputDecoration(labelText: 'المنصة'),
+              items: _platforms.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+              onChanged: (v) => _selectedPlatform = v!,
+            ),
+            TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, {'platform': _selectedPlatform, 'url': _urlCtrl.text}),
+            child: const Text('حفظ'),
+          ),
+        ],
+      ),
+    );
+    if (result != null) {
+      await FirebaseFirestore.instance.collection('socialLinks').doc(docId).update({
+        'platform': result['platform'],
+        'url': result['url'],
+      });
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم التعديل')));
+    }
   }
 
   Future<void> _deleteLink(String docId) async {
@@ -798,32 +828,73 @@ class _SocialLinksManagementState extends State<_SocialLinksManagement> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Padding(padding: const EdgeInsets.all(12), child: Card(child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-        Expanded(child: DropdownButtonFormField<String>(value: _selectedPlatform, decoration: const InputDecoration(labelText: 'المنصة'), items: _platforms.map((p) => DropdownMenuItem(value: p, child: Row(children: [Icon(_icons[p], size: 18), const SizedBox(width: 8), Text(p)]))).toList(), onChanged: (v) => setState(() => _selectedPlatform = v!))),
-        const SizedBox(width: 12), Expanded(flex: 2, child: TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط'))),
-        const SizedBox(width: 12), ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة'), onPressed: _addLink),
-      ]))))),
-      Expanded(child: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('socialLinks').orderBy('order').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          final links = snapshot.data!.docs;
-          if (links.isEmpty) return const Center(child: Text('لا توجد روابط'));
-          return ListView.builder(itemCount: links.length, itemBuilder: (context, index) {
-            final data = links[index].data() as Map<String, dynamic>;
-            final platform = data['platform'] ?? '';
-            final icon = _icons[platform] ?? Icons.link;
-            return Card(margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), child: ListTile(
-              leading: Icon(icon, color: const Color(0xFFFF8C00)), title: Text(platform), subtitle: Text(data['url'] ?? ''),
-              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editLink(links[index].id, data['url'] ?? '', platform)),
-                IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteLink(links[index].id)),
-              ]),
-            ));
-          });
-        },
-      )),
-    ]);
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedPlatform,
+                      decoration: const InputDecoration(labelText: 'المنصة'),
+                      items: _platforms.map((p) => DropdownMenuItem(
+                        value: p,
+                        child: Row(children: [
+                          Icon(_icons[p], size: 18),
+                          const SizedBox(width: 8),
+                          Text(p),
+                        ]),
+                      )).toList(),
+                      onChanged: (v) => setState(() => _selectedPlatform = v!),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(flex: 2, child: TextField(controller: _urlCtrl, decoration: const InputDecoration(labelText: 'الرابط'))),
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(icon: const Icon(Icons.add), label: const Text('إضافة'), onPressed: _addLink),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('socialLinks').orderBy('order').snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+              final links = snapshot.data!.docs;
+              if (links.isEmpty) return const Center(child: Text('لا توجد روابط'));
+              return ListView.builder(
+                itemCount: links.length,
+                itemBuilder: (context, index) {
+                  final data = links[index].data() as Map<String, dynamic>;
+                  final platform = data['platform'] ?? '';
+                  final icon = _icons[platform] ?? Icons.link;
+                  return Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: ListTile(
+                      leading: Icon(icon, color: const Color(0xFFFF8C00)),
+                      title: Text(platform),
+                      subtitle: Text(data['url'] ?? ''),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(icon: const Icon(Icons.edit, color: Colors.blue), onPressed: () => _editLink(links[index].id, data['url'] ?? '', platform)),
+                          IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteLink(links[index].id)),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
